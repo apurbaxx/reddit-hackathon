@@ -17,8 +17,8 @@
   "menu": {
     "items": [
       {
-        "label": "Create a new post",
-        "description": "copyrighted-art",
+        "label": "🎭 Start New Celebrity Game",
+        "description": "Create a new Guess the Celeb challenge post",
         "location": "subreddit",
         "forUserType": "moderator",
         "endpoint": "/internal/menu/post-create"

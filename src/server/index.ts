@@ -1,7 +1,14 @@
 import express from 'express';
-import { InitResponse, IncrementResponse, DecrementResponse } from '../shared/types/api';
+import {
+  InitResponse,
+  GameUpdateResponse,
+  CommentCheckResponse,
+  GameState,
+} from '../shared/types/api';
 import { redis, reddit, createServer, context, getServerPort } from '@devvit/web/server';
 import { createPost } from './core/post';
+import { GameService } from './core/game';
+import { isCorrectGuess, getRandomCorrectMessage } from './core/celebrities';
 
 const app = express();
 
@@ -14,6 +21,30 @@ app.use(express.text());
 
 const router = express.Router();
 
+// Helper function to get or create game state
+async function getOrCreateGameState(postId: string): Promise<GameState> {
+  const gameStateStr = await redis.get(`game:${postId}`);
+
+  if (gameStateStr) {
+    const gameState = JSON.parse(gameStateStr) as GameState;
+    // Update game state based on current time
+    const updatedGameState = GameService.updateGameState(gameState);
+
+    // Save updated state if it changed
+    if (JSON.stringify(updatedGameState) !== JSON.stringify(gameState)) {
+      await redis.set(`game:${postId}`, JSON.stringify(updatedGameState));
+    }
+
+    return updatedGameState;
+  } else {
+    // Create new game
+    const newGameState = GameService.createNewGame();
+    await redis.set(`game:${postId}`, JSON.stringify(newGameState));
+    return newGameState;
+  }
+}
+
+// Initialize game and get current state
 router.get<{ postId: string }, InitResponse | { status: string; message: string }>(
   '/api/init',
   async (_req, res): Promise<void> => {
@@ -29,16 +60,16 @@ router.get<{ postId: string }, InitResponse | { status: string; message: string 
     }
 
     try {
-      const [count, username] = await Promise.all([
-        redis.get('count'),
+      const [gameState, username] = await Promise.all([
+        getOrCreateGameState(postId),
         reddit.getCurrentUsername(),
       ]);
 
       res.json({
         type: 'init',
         postId: postId,
-        count: count ? parseInt(count) : 0,
         username: username ?? 'anonymous',
+        gameState,
       });
     } catch (error) {
       console.error(`API Init Error for post ${postId}:`, error);
@@ -51,10 +82,12 @@ router.get<{ postId: string }, InitResponse | { status: string; message: string 
   }
 );
 
-router.post<{ postId: string }, IncrementResponse | { status: string; message: string }, unknown>(
-  '/api/increment',
+// Get updated game state
+router.get<{ postId: string }, GameUpdateResponse | { status: string; message: string }>(
+  '/api/game-state',
   async (_req, res): Promise<void> => {
     const { postId } = context;
+
     if (!postId) {
       res.status(400).json({
         status: 'error',
@@ -63,18 +96,91 @@ router.post<{ postId: string }, IncrementResponse | { status: string; message: s
       return;
     }
 
-    res.json({
-      count: await redis.incrBy('count', 1),
-      postId,
-      type: 'increment',
-    });
+    try {
+      const gameState = await getOrCreateGameState(postId);
+
+      res.json({
+        type: 'game-update',
+        postId,
+        gameState,
+      });
+    } catch (error) {
+      console.error(`Game State Error for post ${postId}:`, error);
+      res.status(400).json({ status: 'error', message: 'Failed to get game state' });
+    }
   }
 );
 
-router.post<{ postId: string }, DecrementResponse | { status: string; message: string }, unknown>(
-  '/api/decrement',
-  async (_req, res): Promise<void> => {
-    const { postId } = context;
+// Handle comment checking (this would be called by Reddit's comment trigger)
+router.post<
+  unknown,
+  CommentCheckResponse | { status: string; message: string },
+  {
+    postId: string;
+    comment: string;
+    username: string;
+  }
+>('/api/check-comment', async (req, res): Promise<void> => {
+  const { postId, comment, username } = req.body;
+
+  if (!postId || !comment || !username) {
+    res.status(400).json({
+      status: 'error',
+      message: 'postId, comment, and username are required',
+    });
+    return;
+  }
+
+  try {
+    const gameState = await getOrCreateGameState(postId);
+
+    // Only check comments if game is active
+    if (gameState.gamePhase !== 'active') {
+      res.json({
+        type: 'comment-check',
+        isCorrect: false,
+        message: 'Game has ended',
+      });
+      return;
+    }
+
+    // Check if the guess is correct
+    // We need to find the celebrity object to do proper matching
+    const { CELEBRITIES } = await import('./core/celebrities');
+    const celebrity = CELEBRITIES.find((c) => c.name === gameState.celebrityName);
+    const isCorrect = celebrity ? isCorrectGuess(comment, celebrity) : false;
+
+    if (isCorrect) {
+      // Add winner to game state
+      const updatedGameState = GameService.addWinner(gameState, username);
+      await redis.set(`game:${postId}`, JSON.stringify(updatedGameState));
+
+      // Get random success message
+      const message = getRandomCorrectMessage();
+
+      res.json({
+        type: 'comment-check',
+        isCorrect: true,
+        message,
+      });
+    } else {
+      res.json({
+        type: 'comment-check',
+        isCorrect: false,
+      });
+    }
+  } catch (error) {
+    console.error(`Comment Check Error for post ${postId}:`, error);
+    res.status(400).json({ status: 'error', message: 'Failed to check comment' });
+  }
+});
+
+// Reset game (for testing)
+router.post<unknown, { status: string; message: string } | GameUpdateResponse, { postId: string }>(
+  '/api/reset-game',
+  async (req, res): Promise<void> => {
+    const { postId } = req.body;
+
     if (!postId) {
       res.status(400).json({
         status: 'error',
@@ -83,14 +189,24 @@ router.post<{ postId: string }, DecrementResponse | { status: string; message: s
       return;
     }
 
-    res.json({
-      count: await redis.incrBy('count', -1),
-      postId,
-      type: 'decrement',
-    });
+    try {
+      // Create new game
+      const newGameState = GameService.createNewGame();
+      await redis.set(`game:${postId}`, JSON.stringify(newGameState));
+
+      res.json({
+        type: 'game-update',
+        postId,
+        gameState: newGameState,
+      });
+    } catch (error) {
+      console.error(`Reset Game Error for post ${postId}:`, error);
+      res.status(400).json({ status: 'error', message: 'Failed to reset game' });
+    }
   }
 );
 
+// Create new post endpoint
 router.post('/internal/on-app-install', async (_req, res): Promise<void> => {
   try {
     const post = await createPost();

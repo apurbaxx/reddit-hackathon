@@ -1,60 +1,85 @@
 import { navigateTo } from '@devvit/web/client';
-import { useCounter } from './hooks/useCounter';
+import { useGame } from './hooks/useGame';
+import { GameDisplay } from './components/GameDisplay';
 
 export const App = () => {
-  const { count, username, loading, increment, decrement } = useCounter();
+  const {
+    gameState,
+    username,
+    loading,
+    error,
+    timeUntilNextReveal,
+    timeUntilGameEnd,
+    refreshGameState,
+  } = useGame();
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+        <p className="mt-4 text-gray-600">Loading game...</p>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md text-center">
+          <h2 className="text-lg font-semibold text-red-800 mb-2">Oops! Something went wrong</h2>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={refreshGameState}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // No game state
+  if (!gameState) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
+        <p className="text-gray-600">No game available</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex relative flex-col justify-center items-center min-h-screen gap-4">
-      <img className="object-contain w-1/2 max-w-[250px] mx-auto" src="/snoo.png" alt="Snoo" />
-      <div className="flex flex-col items-center gap-2">
-        <h1 className="text-2xl font-bold text-center text-gray-900 ">
-          {username ? `Hey ${username} 👋` : ''}
-        </h1>
-        <p className="text-base text-center text-gray-600 ">
-          Edit <span className="bg-[#e5ebee]  px-1 py-0.5 rounded">src/client/App.tsx</span> to get
-          started.
-        </p>
-      </div>
-      <div className="flex items-center justify-center mt-5">
-        <button
-          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors"
-          onClick={decrement}
-          disabled={loading}
-        >
-          -
-        </button>
-        <span className="text-[1.8em] font-medium mx-5 min-w-[50px] text-center leading-none text-gray-900">
-          {loading ? '...' : count}
-        </span>
-        <button
-          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors"
-          onClick={increment}
-          disabled={loading}
-        >
-          +
-        </button>
-      </div>
-      <footer className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 text-[0.8em] text-gray-600">
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://developers.reddit.com/docs')}
-        >
-          Docs
-        </button>
-        <span className="text-gray-300">|</span>
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://www.reddit.com/r/Devvit')}
-        >
-          r/Devvit
-        </button>
-        <span className="text-gray-300">|</span>
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://discord.com/invite/R7yu2wh9Qz')}
-        >
-          Discord
-        </button>
+    <div className="min-h-screen bg-gray-50">
+      <GameDisplay
+        gameState={gameState}
+        timeUntilNextReveal={timeUntilNextReveal}
+        timeUntilGameEnd={timeUntilGameEnd}
+        username={username}
+      />
+
+      {/* Footer */}
+      <footer className="border-t bg-white py-6 mt-8">
+        <div className="max-w-2xl mx-auto px-6 flex justify-center gap-6 text-sm text-gray-500">
+          <button
+            className="hover:text-blue-600 transition-colors"
+            onClick={() => navigateTo('https://developers.reddit.com/docs')}
+          >
+            Devvit Docs
+          </button>
+          <span>|</span>
+          <button
+            className="hover:text-blue-600 transition-colors"
+            onClick={() => navigateTo('https://www.reddit.com/r/Devvit')}
+          >
+            r/Devvit
+          </button>
+          <span>|</span>
+          <button className="hover:text-blue-600 transition-colors" onClick={refreshGameState}>
+            Refresh Game
+          </button>
+        </div>
       </footer>
     </div>
   );

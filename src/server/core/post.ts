@@ -11,6 +11,6 @@ export const createPost = async () => {
       appDisplayName: 'copyrighted-art',
     },
     subredditName: subredditName,
-    title: 'copyrighted-art',
+    title: '🎭 Guess the Celeb Challenge! Can you identify this celebrity?',
   });
 };
