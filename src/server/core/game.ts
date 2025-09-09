@@ -3,6 +3,7 @@ import { getRandomCelebrity, generateBlurredImageUrls } from './celebrities';
 
 const BLUR_REVEAL_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 const TOTAL_GAME_DURATION = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+const GAME_RESTART_DELAY = 5 * 60 * 1000; // 5 minutes delay before new game starts
 
 export class GameService {
   // Create a new game
@@ -29,8 +30,16 @@ export class GameService {
     const currentTime = Date.now();
     const elapsedTime = currentTime - gameState.startTime;
 
-    // If game is already over, don't update
+    // If game is over, check if it's time to start a new game
     if (gameState.isGameOver) {
+      const timeSinceGameEnd = currentTime - (gameState.startTime + TOTAL_GAME_DURATION);
+
+      // If 5 minutes have passed since game ended, start a new game
+      if (timeSinceGameEnd >= GAME_RESTART_DELAY) {
+        return GameService.createNewGame();
+      }
+
+      // Otherwise, keep the current ended game state
       return gameState;
     }
 
@@ -78,6 +87,13 @@ export class GameService {
   static getTimeUntilGameEnd(gameState: GameState): number {
     const endTime = gameState.startTime + TOTAL_GAME_DURATION;
     return Math.max(0, endTime - Date.now());
+  }
+
+  // Get time until next game starts (when current game is over)
+  static getTimeUntilNextGame(gameState: GameState): number {
+    if (!gameState.isGameOver) return 0;
+    const nextGameStartTime = gameState.startTime + TOTAL_GAME_DURATION + GAME_RESTART_DELAY;
+    return Math.max(0, nextGameStartTime - Date.now());
   }
 
   // Format time for display (returns object with hours, minutes, seconds)

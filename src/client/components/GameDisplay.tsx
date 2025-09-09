@@ -6,6 +6,7 @@ interface GameDisplayProps {
   gameState: GameState;
   timeUntilNextReveal: number;
   timeUntilGameEnd: number;
+  timeUntilNextGame: number;
   username: string;
 }
 
@@ -13,6 +14,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
   gameState,
   timeUntilNextReveal,
   timeUntilGameEnd,
+  timeUntilNextGame,
   username,
 }) => {
   const getCurrentImageUrl = (): string => {
@@ -149,6 +151,22 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
             <div className="text-center text-green-700">
               <p>🤔 No one guessed correctly this time!</p>
               <p className="text-sm mt-1">Better luck next game!</p>
+            </div>
+          )}
+
+          {/* Next Game Countdown */}
+          {timeUntilNextGame > 0 && (
+            <div className="mt-6 text-center">
+              <div className="bg-blue-100 p-4 rounded-lg">
+                <h4 className="text-lg font-semibold text-blue-800 mb-2">
+                  🚀 Next Game Starting Soon!
+                </h4>
+                <Timer
+                  milliseconds={timeUntilNextGame}
+                  label="New game starts in:"
+                  className="text-blue-700"
+                />
+              </div>
             </div>
           )}
         </div>

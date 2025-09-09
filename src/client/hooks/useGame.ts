@@ -8,6 +8,7 @@ export interface UseGameResult {
   error: string | null;
   timeUntilNextReveal: number;
   timeUntilGameEnd: number;
+  timeUntilNextGame: number;
   refreshGameState: () => void;
 }
 
@@ -18,6 +19,7 @@ export const useGame = (): UseGameResult => {
   const [error, setError] = useState<string | null>(null);
   const [timeUntilNextReveal, setTimeUntilNextReveal] = useState<number>(0);
   const [timeUntilGameEnd, setTimeUntilGameEnd] = useState<number>(0);
+  const [timeUntilNextGame, setTimeUntilNextGame] = useState<number>(0);
 
   // Calculate time remaining
   const updateTimers = useCallback((state: GameState) => {
@@ -31,6 +33,15 @@ export const useGame = (): UseGameResult => {
     const gameEndTime = state.startTime + 6 * 60 * 60 * 1000;
     const timeUntilEnd = Math.max(0, gameEndTime - now);
     setTimeUntilGameEnd(timeUntilEnd);
+
+    // Time until next game starts (if current game is over)
+    if (state.isGameOver) {
+      const nextGameStartTime = gameEndTime + 5 * 60 * 1000; // 5 minutes after game ends
+      const timeUntilNext = Math.max(0, nextGameStartTime - now);
+      setTimeUntilNextGame(timeUntilNext);
+    } else {
+      setTimeUntilNextGame(0);
+    }
   }, []);
 
   // Initialize game
@@ -95,13 +106,16 @@ export const useGame = (): UseGameResult => {
     return () => clearInterval(interval);
   }, [gameState, updateTimers]);
 
-  // Auto-refresh game state every 30 seconds
+  // Auto-refresh game state - more frequent when game is over to catch new game
   useEffect(() => {
     if (!gameState || loading) return;
 
+    // Refresh more frequently (every 10 seconds) when game is over to catch new game
+    const refreshInterval = gameState.isGameOver ? 10000 : 30000;
+
     const interval = setInterval(() => {
       void refreshGameState();
-    }, 30000); // 30 seconds
+    }, refreshInterval);
 
     return () => clearInterval(interval);
   }, [gameState, loading, refreshGameState]);
@@ -113,6 +127,7 @@ export const useGame = (): UseGameResult => {
     error,
     timeUntilNextReveal,
     timeUntilGameEnd,
+    timeUntilNextGame,
     refreshGameState,
   };
 };

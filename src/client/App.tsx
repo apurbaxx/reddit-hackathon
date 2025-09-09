@@ -10,6 +10,7 @@ export const App = () => {
     error,
     timeUntilNextReveal,
     timeUntilGameEnd,
+    timeUntilNextGame,
     refreshGameState,
   } = useGame();
 
@@ -56,6 +57,7 @@ export const App = () => {
         gameState={gameState}
         timeUntilNextReveal={timeUntilNextReveal}
         timeUntilGameEnd={timeUntilGameEnd}
+        timeUntilNextGame={timeUntilNextGame}
         username={username}
       />
 
