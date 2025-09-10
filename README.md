@@ -1,4 +1,4 @@
-# 🎭 Guess the Celeb - Reddit Devvit Web App
+#  Guess the Celeb - Reddit Devvit Web App
 
 A fun interactive Reddit game where users try to guess celebrities from progressively less blurred images!
 
