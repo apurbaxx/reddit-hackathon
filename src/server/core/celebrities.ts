@@ -1,62 +1,72 @@
 import { Celebrity } from '../../shared/types/api';
 
-// Celebrity database with free images from public sources
+// Celebrity database with image asset names
 export const CELEBRITIES: Celebrity[] = [
   {
     id: 'leonardo-dicaprio',
     name: 'Leonardo DiCaprio',
-    imageUrl:
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=face',
+    imageUrl: 'leonardo-dicaprio.jpg',
     aliases: ['Leo DiCaprio', 'Leo', 'DiCaprio', 'Leonardo'],
   },
   {
     id: 'brad-pitt',
     name: 'Brad Pitt',
-    imageUrl:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+    imageUrl: 'brad-pitt.jpg',
     aliases: ['Brad', 'Pitt'],
   },
   {
     id: 'tom-cruise',
     name: 'Tom Cruise',
-    imageUrl:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
+    imageUrl: 'tom-cruise.jpg',
     aliases: ['Tom', 'Cruise', 'TC'],
   },
   {
     id: 'will-smith',
     name: 'Will Smith',
-    imageUrl:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face',
+    imageUrl: 'will-smith.jpg',
     aliases: ['Will', 'Smith', 'Fresh Prince'],
   },
   {
     id: 'jennifer-lawrence',
     name: 'Jennifer Lawrence',
-    imageUrl:
-      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face',
+    imageUrl: 'jennifer-lawrence.jpg',
     aliases: ['Jennifer', 'Lawrence', 'J Law', 'JLaw'],
   },
   {
     id: 'ryan-reynolds',
     name: 'Ryan Reynolds',
-    imageUrl:
-      'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=400&h=400&fit=crop&crop=face',
+    imageUrl: 'ryan-reynolds.jpg',
     aliases: ['Ryan', 'Reynolds', 'Deadpool'],
   },
   {
     id: 'scarlett-johansson',
     name: 'Scarlett Johansson',
-    imageUrl:
-      'https://images.unsplash.com/photo-1494790108755-2616b612b9c1?w=400&h=400&fit=crop&crop=face',
+    imageUrl: 'scarlett-johansson.jpg',
     aliases: ['Scarlett', 'Johansson', 'ScarJo', 'Black Widow'],
   },
   {
     id: 'robert-downey-jr',
     name: 'Robert Downey Jr',
-    imageUrl:
-      'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=400&h=400&fit=crop&crop=face',
+    imageUrl: 'robert-downey-jr.jpg',
     aliases: ['Robert Downey Jr', 'RDJ', 'Iron Man', 'Tony Stark', 'Robert Downey'],
+  },
+  {
+    id: 'emma-stone',
+    name: 'Emma Stone',
+    imageUrl: 'emma-stone.jpg',
+    aliases: ['Emma', 'Stone'],
+  },
+  {
+    id: 'chris-evans',
+    name: 'Chris Evans',
+    imageUrl: 'chris-evans.jpg',
+    aliases: ['Chris', 'Evans', 'Captain America', 'Steve Rogers'],
+  },
+  {
+    id: 'margot-robbie',
+    name: 'Margot Robbie',
+    imageUrl: 'margot-robbie.jpg',
+    aliases: ['Margot', 'Robbie', 'Harley Quinn'],
   },
 ];
 
@@ -72,16 +82,15 @@ export function getCelebrityById(id: string): Celebrity | undefined {
 }
 
 // Function to generate blurred image URLs using a CSS filter approach
-// In a real implementation, you might pre-generate these or use an image processing service
+// The frontend will apply CSS blur filters, so we just return the base URL
 export function generateBlurredImageUrls(baseImageUrl: string): string[] {
-  // These would be URLs to pre-processed images at different blur levels
-  // For this demo, we'll use CSS filters in the frontend
-  // But here we return the base URL for all levels for now
+  // Return the same base URL for all levels since CSS handles the blur effect
+  // This ensures the same image is used consistently across all blur levels
   return [
-    `${baseImageUrl}&blur=50`, // Level 0 - most blurred
-    `${baseImageUrl}&blur=25`, // Level 1
-    `${baseImageUrl}&blur=10`, // Level 2
-    baseImageUrl, // Level 3 - clear
+    baseImageUrl, // Level 0 - will be blurred with CSS
+    baseImageUrl, // Level 1 - will be blurred with CSS
+    baseImageUrl, // Level 2 - will be blurred with CSS
+    baseImageUrl, // Level 3 - clear (no CSS blur)
   ];
 }
 

@@ -7,10 +7,23 @@ const GAME_RESTART_DELAY = 5 * 60 * 1000; // 5 minutes delay before new game sta
 
 export class GameService {
   // Create a new game
-  static createNewGame(): GameState {
+  static async createNewGame(getAssetURL?: (filename: string) => Promise<string>): Promise<GameState> {
     const celebrity = getRandomCelebrity();
     const startTime = Date.now();
-    const blurredImages = generateBlurredImageUrls(celebrity.imageUrl);
+    
+    // Get the proper Reddit CDN URL for the celebrity image if getAssetURL is provided
+    let imageUrl = celebrity.imageUrl;
+    if (getAssetURL) {
+      try {
+        imageUrl = await getAssetURL(celebrity.imageUrl);
+      } catch (error) {
+        console.error('Failed to get asset URL for', celebrity.imageUrl, error);
+        // Fall back to original filename if asset URL resolution fails
+        imageUrl = celebrity.imageUrl;
+      }
+    }
+    
+    const blurredImages = generateBlurredImageUrls(imageUrl);
 
     return {
       celebrityName: celebrity.name,
@@ -20,13 +33,13 @@ export class GameService {
       nextRevealTime: startTime + BLUR_REVEAL_INTERVAL,
       winners: [],
       isGameOver: false,
-      imageUrl: celebrity.imageUrl,
+      imageUrl: imageUrl,
       blurredImages,
     };
   }
 
   // Update game state based on current time
-  static updateGameState(gameState: GameState): GameState {
+  static async updateGameState(gameState: GameState, getAssetURL?: (filename: string) => Promise<string>): Promise<GameState> {
     const currentTime = Date.now();
     const elapsedTime = currentTime - gameState.startTime;
 
@@ -36,7 +49,7 @@ export class GameService {
 
       // If 5 minutes have passed since game ended, start a new game
       if (timeSinceGameEnd >= GAME_RESTART_DELAY) {
-        return GameService.createNewGame();
+        return GameService.createNewGame(getAssetURL);
       }
 
       // Otherwise, keep the current ended game state

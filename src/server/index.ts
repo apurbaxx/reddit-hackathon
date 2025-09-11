@@ -21,6 +21,12 @@ app.use(express.text());
 
 const router = express.Router();
 
+// Helper function to get asset URL - assets will be served directly from client build
+const getAssetURL = async (filename: string): Promise<string> => {
+  // Assets are copied to the client build directory by Vite, so they're available directly
+  return filename;
+};
+
 // Helper function to get or create game state
 async function getOrCreateGameState(postId: string): Promise<GameState> {
   const gameStateStr = await redis.get(`game:${postId}`);
@@ -28,7 +34,7 @@ async function getOrCreateGameState(postId: string): Promise<GameState> {
   if (gameStateStr) {
     const gameState = JSON.parse(gameStateStr) as GameState;
     // Update game state based on current time
-    const updatedGameState = GameService.updateGameState(gameState);
+    const updatedGameState = await GameService.updateGameState(gameState, getAssetURL);
 
     // Save updated state if it changed
     if (JSON.stringify(updatedGameState) !== JSON.stringify(gameState)) {
@@ -38,7 +44,7 @@ async function getOrCreateGameState(postId: string): Promise<GameState> {
     return updatedGameState;
   } else {
     // Create new game
-    const newGameState = GameService.createNewGame();
+    const newGameState = await GameService.createNewGame(getAssetURL);
     await redis.set(`game:${postId}`, JSON.stringify(newGameState));
     return newGameState;
   }
@@ -191,7 +197,7 @@ router.post<unknown, { status: string; message: string } | GameUpdateResponse, {
 
     try {
       // Create new game
-      const newGameState = GameService.createNewGame();
+      const newGameState = await GameService.createNewGame(getAssetURL);
       await redis.set(`game:${postId}`, JSON.stringify(newGameState));
 
       res.json({

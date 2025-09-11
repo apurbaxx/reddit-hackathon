@@ -18,8 +18,8 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
   username,
 }) => {
   const getCurrentImageUrl = (): string => {
-    // Since we can't actually blur images server-side with the free APIs,
-    // we'll use CSS blur filter on the client side
+    // Use the image URL provided by the server, which should be properly resolved
+    console.log('getCurrentImageUrl called with gameState.imageUrl:', gameState.imageUrl);
     return gameState.imageUrl;
   };
 
@@ -64,7 +64,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
     <div className="max-w-2xl mx-auto p-6 bg-white">
       {/* Header */}
       <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Guess the Celebrity!</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Guess the Celebrity...</h1>
         <p className="text-gray-600">
           {gameState.gamePhase === 'active'
             ? 'Submit your guess in the comments below!'
@@ -91,8 +91,15 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
             className="w-80 h-80 object-cover rounded-lg shadow-lg"
             style={gameState.gamePhase === 'active' ? blurStyle : {}}
             onError={(e) => {
-              // Fallback to a placeholder if image fails to load
-              e.currentTarget.src = '/snoo.png';
+              console.error('Image failed to load:', getCurrentImageUrl());
+              console.error('Original gameState.imageUrl:', gameState.imageUrl);
+              
+              // If the image fails to load, fall back to snoo.png
+              console.log('Image failed to load, using snoo.png fallback');
+              e.currentTarget.src = 'snoo.png';
+            }}
+            onLoad={() => {
+              console.log('Image loaded successfully:', getCurrentImageUrl());
             }}
           />
           {gameState.gamePhase === 'revealed' && (

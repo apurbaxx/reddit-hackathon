@@ -17,4 +17,6 @@ export default defineConfig({
       },
     },
   },
+  // Copy assets from the root assets folder to the client build output
+  publicDir: '../../assets',
 });
