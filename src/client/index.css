@@ -19,6 +19,25 @@
   --reddit-border: #ccc;
 }
 
+/* Dark Mode Color Scheme */
+[data-theme="dark"] {
+  --reddit-orange: #ff4500;
+  --reddit-orange-dark: #cc3700;
+  --reddit-orange-light: #2d1a0f;
+  --reddit-blue: #4fbcff;
+  --reddit-blue-dark: #0079d3;
+  --reddit-blue-light: #0f1a2d;
+  --reddit-red: #ff4757;
+  --reddit-red-light: #2d0f0f;
+  --reddit-green: #46d160;
+  --reddit-green-dark: #2d8f47;
+  --reddit-green-light: #0f2d14;
+  --reddit-bg: #030303;
+  --reddit-text: #d7dadc;
+  --reddit-text-secondary: #818384;
+  --reddit-border: #343536;
+}
+
 /* Custom Reddit-style classes */
 .bg-reddit-orange { background-color: var(--reddit-orange); }
 .bg-reddit-orange-dark { background-color: var(--reddit-orange-dark); }
@@ -60,4 +79,36 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--reddit-bg);
   color: var(--reddit-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode card backgrounds */
+[data-theme="dark"] .bg-white {
+  background-color: #1a1a1b !important;
+}
+
+[data-theme="dark"] .bg-reddit-bg {
+  background-color: var(--reddit-bg) !important;
+}
+
+/* Dark mode specific overrides */
+[data-theme="dark"] .bg-reddit-orange-light {
+  background-color: var(--reddit-orange-light) !important;
+}
+
+[data-theme="dark"] .bg-reddit-blue-light {
+  background-color: var(--reddit-blue-light) !important;
+}
+
+[data-theme="dark"] .bg-reddit-red-light {
+  background-color: var(--reddit-red-light) !important;
+}
+
+[data-theme="dark"] .bg-reddit-green-light {
+  background-color: var(--reddit-green-light) !important;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
