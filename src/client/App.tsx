@@ -14,6 +14,7 @@ export const App = () => {
     timeUntilGameEnd,
     timeUntilNextGame,
     refreshGameState,
+    resetGame,
   } = useGame();
 
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -112,6 +113,10 @@ export const App = () => {
           <span>•</span>
           <button className="hover:text-reddit-orange transition-colors" onClick={refreshGameState}>
             Refresh Game
+          </button>
+          <span>•</span>
+          <button className="hover:text-reddit-red transition-colors" onClick={resetGame}>
+            🔄 Reset Game (Dev)
           </button>
         </div>
       </footer>

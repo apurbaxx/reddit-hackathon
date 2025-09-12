@@ -10,6 +10,7 @@ export interface UseGameResult {
   timeUntilGameEnd: number;
   timeUntilNextGame: number;
   refreshGameState: () => void;
+  resetGame: () => void;
 }
 
 export const useGame = (): UseGameResult => {
@@ -90,6 +91,35 @@ export const useGame = (): UseGameResult => {
     }
   }, [gameState, updateTimers]);
 
+  // Reset game (for development/testing)
+  const resetGame = useCallback(async () => {
+    if (!gameState) return;
+
+    try {
+      setLoading(true);
+      const response = await fetch('/api/reset-game', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId: 'dev-post-id' }), // Use a fixed postId for development
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: GameUpdateResponse = await response.json();
+
+      setGameState(data.gameState);
+      updateTimers(data.gameState);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to reset game:', err);
+      setError(err instanceof Error ? err.message : 'Failed to reset game');
+    } finally {
+      setLoading(false);
+    }
+  }, [gameState, updateTimers]);
+
   // Initialize on mount
   useEffect(() => {
     void initializeGame();
@@ -129,5 +159,6 @@ export const useGame = (): UseGameResult => {
     timeUntilGameEnd,
     timeUntilNextGame,
     refreshGameState,
+    resetGame,
   };
 };
