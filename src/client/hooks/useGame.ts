@@ -16,6 +16,7 @@ export interface UseGameResult {
 export const useGame = (): UseGameResult => {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [username, setUsername] = useState<string>('');
+  const [postId, setPostId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [timeUntilNextReveal, setTimeUntilNextReveal] = useState<number>(0);
@@ -61,6 +62,7 @@ export const useGame = (): UseGameResult => {
 
       setGameState(data.gameState);
       setUsername(data.username);
+      setPostId(data.postId); // Store the postId for use in reset
       updateTimers(data.gameState);
     } catch (err) {
       console.error('Failed to initialize game:', err);
@@ -72,7 +74,7 @@ export const useGame = (): UseGameResult => {
 
   // Refresh game state
   const refreshGameState = useCallback(async () => {
-    if (!gameState) return;
+    if (!postId) return;
 
     try {
       const response = await fetch('/api/game-state');
@@ -89,18 +91,18 @@ export const useGame = (): UseGameResult => {
       console.error('Failed to refresh game state:', err);
       setError(err instanceof Error ? err.message : 'Failed to refresh game state');
     }
-  }, [gameState, updateTimers]);
+  }, [postId, updateTimers]);
 
   // Reset game (for development/testing)
   const resetGame = useCallback(async () => {
-    if (!gameState) return;
+    if (!gameState || !postId) return;
 
     try {
       setLoading(true);
       const response = await fetch('/api/reset-game', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ postId: 'dev-post-id' }), // Use a fixed postId for development
+        body: JSON.stringify({ postId }), // Use the actual postId from initialization
       });
 
       if (!response.ok) {
@@ -118,7 +120,7 @@ export const useGame = (): UseGameResult => {
     } finally {
       setLoading(false);
     }
-  }, [gameState, updateTimers]);
+  }, [gameState, postId, updateTimers]);
 
   // Initialize on mount
   useEffect(() => {
