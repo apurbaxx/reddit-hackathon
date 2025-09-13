@@ -1,3 +1,10 @@
+// Shared game timing constants
+export const GAME_TIMING = {
+  BLUR_REVEAL_INTERVAL: 30 * 60 * 1000, // 30 minutes in milliseconds
+  TOTAL_GAME_DURATION: 2 * 60 * 60 * 1000, // 2 hours in milliseconds
+  GAME_RESTART_DELAY: 5 * 60 * 1000, // 5 minutes delay before new game starts
+} as const;
+
 export type InitResponse = {
   type: 'init';
   postId: string;

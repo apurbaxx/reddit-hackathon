@@ -1,16 +1,18 @@
-import { GameState } from '../../shared/types/api';
+import { GameState, GAME_TIMING } from '../../shared/types/api';
 import { getRandomCelebrity, generateBlurredImageUrls } from './celebrities';
 
-const BLUR_REVEAL_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
-const TOTAL_GAME_DURATION = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
-const GAME_RESTART_DELAY = 5 * 60 * 1000; // 5 minutes delay before new game starts
+const BLUR_REVEAL_INTERVAL = GAME_TIMING.BLUR_REVEAL_INTERVAL;
+const TOTAL_GAME_DURATION = GAME_TIMING.TOTAL_GAME_DURATION;
+const GAME_RESTART_DELAY = GAME_TIMING.GAME_RESTART_DELAY;
 
 export class GameService {
   // Create a new game
-  static async createNewGame(getAssetURL?: (filename: string) => Promise<string>): Promise<GameState> {
+  static async createNewGame(
+    getAssetURL?: (filename: string) => Promise<string>
+  ): Promise<GameState> {
     const celebrity = getRandomCelebrity();
     const startTime = Date.now();
-    
+
     // Get the proper Reddit CDN URL for the celebrity image if getAssetURL is provided
     let imageUrl = celebrity.imageUrl;
     if (getAssetURL) {
@@ -22,7 +24,7 @@ export class GameService {
         imageUrl = celebrity.imageUrl;
       }
     }
-    
+
     const blurredImages = generateBlurredImageUrls(imageUrl);
 
     return {
@@ -39,7 +41,10 @@ export class GameService {
   }
 
   // Update game state based on current time
-  static async updateGameState(gameState: GameState, getAssetURL?: (filename: string) => Promise<string>): Promise<GameState> {
+  static async updateGameState(
+    gameState: GameState,
+    getAssetURL?: (filename: string) => Promise<string>
+  ): Promise<GameState> {
     const currentTime = Date.now();
     const elapsedTime = currentTime - gameState.startTime;
 
@@ -60,7 +65,7 @@ export class GameService {
     const intervals = Math.floor(elapsedTime / BLUR_REVEAL_INTERVAL);
     const newBlurLevel = Math.min(intervals, 3); // Max level is 3 (clear image)
 
-    // Check if game should be over (6 hours passed)
+    // Check if game should be over (2 hours passed)
     const isGameOver = elapsedTime >= TOTAL_GAME_DURATION;
 
     // Calculate next reveal time

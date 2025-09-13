@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { InitResponse, GameState, GameUpdateResponse } from '../../shared/types/api';
+import { InitResponse, GameState, GameUpdateResponse, GAME_TIMING } from '../../shared/types/api';
 
 export interface UseGameResult {
   gameState: GameState | null;
@@ -31,14 +31,14 @@ export const useGame = (): UseGameResult => {
     const nextRevealTime = Math.max(0, state.nextRevealTime - now);
     setTimeUntilNextReveal(nextRevealTime);
 
-    // Time until game ends (6 hours from start)
-    const gameEndTime = state.startTime + 6 * 60 * 60 * 1000;
+    // Time until game ends (using shared constant)
+    const gameEndTime = state.startTime + GAME_TIMING.TOTAL_GAME_DURATION;
     const timeUntilEnd = Math.max(0, gameEndTime - now);
     setTimeUntilGameEnd(timeUntilEnd);
 
     // Time until next game starts (if current game is over)
     if (state.isGameOver) {
-      const nextGameStartTime = gameEndTime + 5 * 60 * 1000; // 5 minutes after game ends
+      const nextGameStartTime = gameEndTime + GAME_TIMING.GAME_RESTART_DELAY;
       const timeUntilNext = Math.max(0, nextGameStartTime - now);
       setTimeUntilNextGame(timeUntilNext);
     } else {

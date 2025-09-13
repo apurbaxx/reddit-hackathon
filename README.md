@@ -1,4 +1,4 @@
-#  Guess the Celeb - Reddit Devvit Web App
+# Guess the Celeb - Reddit Devvit Web App
 
 A fun interactive Reddit game where users try to guess celebrities from progressively less blurred images!
 
@@ -6,20 +6,21 @@ A fun interactive Reddit game where users try to guess celebrities from progress
 
 1. **Look at the blurred image** - Each game starts with a heavily blurred celebrity photo
 2. **Submit your guess** - Type your guess in the comments (e.g., "Tom Cruise", "Leonardo DiCaprio")
-3. **Wait for reveals** - Every 2 hours, the image becomes less blurred
+3. **Wait for reveals** - Every 30 minutes, the image becomes less blurred
 4. **Get rewarded** - Correct guesses get a fun bot reply!
-5. **See final results** - After 6 hours, the clear image and all winners are revealed
+5. **See final results** - After 2 hours, the clear image and all winners are revealed
 
 ## 🕐 Game Timeline
 
-- **Hour 0**: Game starts with maximum blur (Level 1)
-- **Hour 2**: First reveal - less blur (Level 2)
-- **Hour 4**: Second reveal - even clearer (Level 3)
-- **Hour 6**: Final reveal - clear image + results
+- **Hour 0:00**: Game starts with maximum blur (Level 1)
+- **Hour 0:30**: First reveal - less blur (Level 2)
+- **Hour 1:00**: Second reveal - even clearer (Level 3)
+- **Hour 1:30**: Third reveal - clearer (Level 4)
+- **Hour 2:00**: Final reveal - clear image + results
 
 ## ✨ Features
 
-- **Progressive Image Reveals**: Images get clearer every 2 hours
+- **Progressive Image Reveals**: Images get clearer every 30 minutes
 - **Smart Fuzzy Matching**: "Cruise" matches "Tom Cruise", nicknames work too
 - **Real-time Countdown Timers**: See when the next reveal happens
 - **Winner Tracking**: All correct guessers are remembered and displayed

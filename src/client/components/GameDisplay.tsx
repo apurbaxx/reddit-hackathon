@@ -232,7 +232,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
-              <span>Every 2 hours, the image becomes less blurred</span>
+              <span>Every 30 minutes, the image becomes less blurred</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
@@ -240,7 +240,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
-              <span>Game ends after 6 hours with full reveal</span>
+              <span>Game ends after 2 hours with full reveal</span>
             </li>
           </ul>
           {username && (
