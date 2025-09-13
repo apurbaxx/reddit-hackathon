@@ -14,8 +14,8 @@ interface GameDisplayProps {
   userEligibility: {
     canGuess: boolean;
     hasAlreadyWon: boolean;
-    timeUntilNextAttempt?: number;
   };
+  timeUntilNextAttempt: number;
   lastGuessResult?: {
     isCorrect: boolean;
     message?: string;
@@ -31,6 +31,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
   onSubmitGuess,
   isSubmittingGuess,
   userEligibility,
+  timeUntilNextAttempt,
   lastGuessResult,
 }) => {
   const getCurrentImageUrl = (): string => {
@@ -274,7 +275,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
             isSubmitting={isSubmittingGuess}
             canGuess={userEligibility.canGuess}
             hasAlreadyWon={userEligibility.hasAlreadyWon}
-            timeUntilNextAttempt={userEligibility.timeUntilNextAttempt || 0}
+            timeUntilNextAttempt={timeUntilNextAttempt}
             gamePhase={gameState.gamePhase}
             {...(lastGuessResult && { lastGuessResult })}
           />

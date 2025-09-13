@@ -19,6 +19,7 @@ export const App = () => {
     submitGuess,
     isSubmittingGuess,
     userEligibility,
+    timeUntilNextAttempt,
     lastGuessResult,
   } = useGame();
 
@@ -99,6 +100,7 @@ export const App = () => {
           onSubmitGuess={submitGuess}
           isSubmittingGuess={isSubmittingGuess}
           userEligibility={userEligibility}
+          timeUntilNextAttempt={timeUntilNextAttempt}
           {...(lastGuessResult && { lastGuessResult })}
         />
       </div>

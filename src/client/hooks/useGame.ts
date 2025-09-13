@@ -24,8 +24,8 @@ export interface UseGameResult {
   userEligibility: {
     canGuess: boolean;
     hasAlreadyWon: boolean;
-    timeUntilNextAttempt?: number;
   };
+  timeUntilNextAttempt: number; // Calculated dynamically
   lastGuessResult?: {
     isCorrect: boolean;
     message?: string;
@@ -47,11 +47,12 @@ export const useGame = (): UseGameResult => {
   const [userEligibility, setUserEligibility] = useState<{
     canGuess: boolean;
     hasAlreadyWon: boolean;
-    timeUntilNextAttempt?: number;
+    nextAllowedAttemptTime?: number; // Store the timestamp instead of calculated time
   }>({
     canGuess: false,
     hasAlreadyWon: false,
   });
+  const [timeUntilNextAttempt, setTimeUntilNextAttempt] = useState<number>(0);
   const [lastGuessResult, setLastGuessResult] = useState<
     | {
         isCorrect: boolean;
@@ -61,27 +62,38 @@ export const useGame = (): UseGameResult => {
   >(undefined);
 
   // Calculate time remaining
-  const updateTimers = useCallback((state: GameState) => {
-    const now = Date.now();
+  const updateTimers = useCallback(
+    (state: GameState) => {
+      const now = Date.now();
 
-    // Time until next reveal
-    const nextRevealTime = Math.max(0, state.nextRevealTime - now);
-    setTimeUntilNextReveal(nextRevealTime);
+      // Time until next reveal
+      const nextRevealTime = Math.max(0, state.nextRevealTime - now);
+      setTimeUntilNextReveal(nextRevealTime);
 
-    // Time until game ends (using shared constant)
-    const gameEndTime = state.startTime + GAME_TIMING.TOTAL_GAME_DURATION;
-    const timeUntilEnd = Math.max(0, gameEndTime - now);
-    setTimeUntilGameEnd(timeUntilEnd);
+      // Time until game ends (using shared constant)
+      const gameEndTime = state.startTime + GAME_TIMING.TOTAL_GAME_DURATION;
+      const timeUntilEnd = Math.max(0, gameEndTime - now);
+      setTimeUntilGameEnd(timeUntilEnd);
 
-    // Time until next game starts (if current game is over)
-    if (state.isGameOver) {
-      const nextGameStartTime = gameEndTime + GAME_TIMING.GAME_RESTART_DELAY;
-      const timeUntilNext = Math.max(0, nextGameStartTime - now);
-      setTimeUntilNextGame(timeUntilNext);
-    } else {
-      setTimeUntilNextGame(0);
-    }
-  }, []);
+      // Time until next game starts (if current game is over)
+      if (state.isGameOver) {
+        const nextGameStartTime = gameEndTime + GAME_TIMING.GAME_RESTART_DELAY;
+        const timeUntilNext = Math.max(0, nextGameStartTime - now);
+        setTimeUntilNextGame(timeUntilNext);
+      } else {
+        setTimeUntilNextGame(0);
+      }
+
+      // Calculate time until next attempt (if user is on cooldown)
+      if (userEligibility.nextAllowedAttemptTime) {
+        const timeUntilAttempt = Math.max(0, userEligibility.nextAllowedAttemptTime - now);
+        setTimeUntilNextAttempt(timeUntilAttempt);
+      } else {
+        setTimeUntilNextAttempt(0);
+      }
+    },
+    [userEligibility.nextAllowedAttemptTime]
+  );
 
   // Initialize game
   const initializeGame = useCallback(async () => {
@@ -173,14 +185,14 @@ export const useGame = (): UseGameResult => {
       const eligibilityUpdate: {
         canGuess: boolean;
         hasAlreadyWon: boolean;
-        timeUntilNextAttempt?: number;
+        nextAllowedAttemptTime?: number;
       } = {
         canGuess: data.canGuess,
         hasAlreadyWon: data.hasAlreadyWon,
       };
 
-      if (data.timeUntilNextAttempt !== undefined) {
-        eligibilityUpdate.timeUntilNextAttempt = data.timeUntilNextAttempt;
+      if (data.nextAllowedAttemptTime !== undefined) {
+        eligibilityUpdate.nextAllowedAttemptTime = data.nextAllowedAttemptTime;
       }
 
       setUserEligibility(eligibilityUpdate);
@@ -284,6 +296,7 @@ export const useGame = (): UseGameResult => {
     submitGuess,
     isSubmittingGuess,
     userEligibility,
+    timeUntilNextAttempt,
     ...(lastGuessResult && { lastGuessResult }),
   };
 };
