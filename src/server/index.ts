@@ -2,7 +2,8 @@ import express from 'express';
 import {
   InitResponse,
   GameUpdateResponse,
-  CommentCheckResponse,
+  GuessSubmissionResponse,
+  UserEligibilityResponse,
   GameState,
 } from '../shared/types/api';
 import { redis, reddit, createServer, context, getServerPort } from '@devvit/web/server';
@@ -117,67 +118,153 @@ router.get<{ postId: string }, GameUpdateResponse | { status: string; message: s
   }
 );
 
-// Handle comment checking (this would be called by Reddit's comment trigger)
+// Check if user can make a guess
+router.get<{ postId: string }, UserEligibilityResponse | { status: string; message: string }>(
+  '/api/user-eligibility',
+  async (_req, res): Promise<void> => {
+    const { postId } = context;
+
+    if (!postId) {
+      res.status(400).json({
+        status: 'error',
+        message: 'postId is required',
+      });
+      return;
+    }
+
+    try {
+      const [gameState, username] = await Promise.all([
+        getOrCreateGameState(postId),
+        reddit.getCurrentUsername(),
+      ]);
+
+      if (!username) {
+        res.status(400).json({
+          status: 'error',
+          message: 'User not authenticated',
+        });
+        return;
+      }
+
+      const eligibility = GameService.canUserGuess(gameState, username);
+
+      const response: UserEligibilityResponse = {
+        type: 'user-eligibility',
+        canGuess: eligibility.canGuess,
+        hasAlreadyWon: eligibility.hasAlreadyWon,
+      };
+
+      if (eligibility.nextAllowedAttemptTime !== undefined) {
+        response.nextAllowedAttemptTime = eligibility.nextAllowedAttemptTime;
+      }
+
+      if (eligibility.timeUntilNextAttempt !== undefined) {
+        response.timeUntilNextAttempt = eligibility.timeUntilNextAttempt;
+      }
+
+      res.json(response);
+    } catch (error) {
+      console.error(`User Eligibility Error for post ${postId}:`, error);
+      res.status(400).json({ status: 'error', message: 'Failed to check user eligibility' });
+    }
+  }
+);
+
+// Submit a guess
 router.post<
   unknown,
-  CommentCheckResponse | { status: string; message: string },
+  GuessSubmissionResponse | { status: string; message: string },
   {
     postId: string;
-    comment: string;
-    username: string;
+    guess: string;
   }
->('/api/check-comment', async (req, res): Promise<void> => {
-  const { postId, comment, username } = req.body;
+>('/api/submit-guess', async (req, res): Promise<void> => {
+  const { postId, guess } = req.body;
 
-  if (!postId || !comment || !username) {
+  if (!postId || !guess) {
     res.status(400).json({
       status: 'error',
-      message: 'postId, comment, and username are required',
+      message: 'postId and guess are required',
     });
     return;
   }
 
   try {
-    const gameState = await getOrCreateGameState(postId);
+    const [gameState, username] = await Promise.all([
+      getOrCreateGameState(postId),
+      reddit.getCurrentUsername(),
+    ]);
 
-    // Only check comments if game is active
+    if (!username) {
+      res.status(400).json({
+        status: 'error',
+        message: 'User not authenticated',
+      });
+      return;
+    }
+
+    // Check if user can make a guess
+    const eligibility = GameService.canUserGuess(gameState, username);
+    if (!eligibility.canGuess) {
+      const response: GuessSubmissionResponse = {
+        type: 'guess-submission',
+        isCorrect: false,
+        message: eligibility.hasAlreadyWon
+          ? 'You have already guessed correctly!'
+          : 'You must wait before guessing again.',
+        canGuessAgain: false,
+      };
+
+      if (eligibility.nextAllowedAttemptTime !== undefined) {
+        response.nextAllowedAttemptTime = eligibility.nextAllowedAttemptTime;
+      }
+
+      res.json(response);
+      return;
+    }
+
+    // Only check guesses if game is active
     if (gameState.gamePhase !== 'active') {
       res.json({
-        type: 'comment-check',
+        type: 'guess-submission',
         isCorrect: false,
         message: 'Game has ended',
+        canGuessAgain: false,
       });
       return;
     }
 
     // Check if the guess is correct
-    // We need to find the celebrity object to do proper matching
     const { CELEBRITIES } = await import('./core/celebrities');
     const celebrity = CELEBRITIES.find((c) => c.name === gameState.celebrityName);
-    const isCorrect = celebrity ? isCorrectGuess(comment, celebrity) : false;
+    const isCorrect = celebrity ? isCorrectGuess(guess, celebrity) : false;
+
+    // Record the attempt
+    const updatedGameState = GameService.recordUserAttempt(gameState, username, isCorrect);
+    await redis.set(`game:${postId}`, JSON.stringify(updatedGameState));
 
     if (isCorrect) {
-      // Add winner to game state
-      const updatedGameState = GameService.addWinner(gameState, username);
-      await redis.set(`game:${postId}`, JSON.stringify(updatedGameState));
-
       // Get random success message
       const message = getRandomCorrectMessage();
 
       res.json({
-        type: 'comment-check',
+        type: 'guess-submission',
         isCorrect: true,
         message,
+        canGuessAgain: false, // User has won, no more guessing needed
       });
     } else {
       res.json({
-        type: 'comment-check',
+        type: 'guess-submission',
         isCorrect: false,
+        message: 'Not quite right! Try again in 30 minutes.',
+        canGuessAgain: false,
+        nextAllowedAttemptTime: Date.now() + 30 * 60 * 1000, // 30 minutes from now
       });
     }
   } catch (error) {
-    console.error(`Comment Check Error for post ${postId}:`, error);
-    res.status(400).json({ status: 'error', message: 'Failed to check comment' });
+    console.error(`Guess Submission Error for post ${postId}:`, error);
+    res.status(400).json({ status: 'error', message: 'Failed to submit guess' });
   }
 });
 

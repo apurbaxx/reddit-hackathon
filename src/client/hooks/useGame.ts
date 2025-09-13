@@ -1,5 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { InitResponse, GameState, GameUpdateResponse, GAME_TIMING } from '../../shared/types/api';
+import {
+  InitResponse,
+  GameState,
+  GameUpdateResponse,
+  GuessSubmissionResponse,
+  UserEligibilityResponse,
+  GAME_TIMING,
+} from '../../shared/types/api';
 
 export interface UseGameResult {
   gameState: GameState | null;
@@ -11,6 +18,18 @@ export interface UseGameResult {
   timeUntilNextGame: number;
   refreshGameState: () => void;
   resetGame: () => void;
+  // New guess functionality
+  submitGuess: (guess: string) => Promise<void>;
+  isSubmittingGuess: boolean;
+  userEligibility: {
+    canGuess: boolean;
+    hasAlreadyWon: boolean;
+    timeUntilNextAttempt?: number;
+  };
+  lastGuessResult?: {
+    isCorrect: boolean;
+    message?: string;
+  };
 }
 
 export const useGame = (): UseGameResult => {
@@ -22,6 +41,24 @@ export const useGame = (): UseGameResult => {
   const [timeUntilNextReveal, setTimeUntilNextReveal] = useState<number>(0);
   const [timeUntilGameEnd, setTimeUntilGameEnd] = useState<number>(0);
   const [timeUntilNextGame, setTimeUntilNextGame] = useState<number>(0);
+
+  // New guess functionality state
+  const [isSubmittingGuess, setIsSubmittingGuess] = useState<boolean>(false);
+  const [userEligibility, setUserEligibility] = useState<{
+    canGuess: boolean;
+    hasAlreadyWon: boolean;
+    timeUntilNextAttempt?: number;
+  }>({
+    canGuess: false,
+    hasAlreadyWon: false,
+  });
+  const [lastGuessResult, setLastGuessResult] = useState<
+    | {
+        isCorrect: boolean;
+        message?: string;
+      }
+    | undefined
+  >(undefined);
 
   // Calculate time remaining
   const updateTimers = useCallback((state: GameState) => {
@@ -122,10 +159,91 @@ export const useGame = (): UseGameResult => {
     }
   }, [gameState, postId, updateTimers]);
 
+  // Check user eligibility for guessing
+  const checkUserEligibility = useCallback(async () => {
+    try {
+      const response = await fetch('/api/user-eligibility');
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: UserEligibilityResponse = await response.json();
+
+      const eligibilityUpdate: {
+        canGuess: boolean;
+        hasAlreadyWon: boolean;
+        timeUntilNextAttempt?: number;
+      } = {
+        canGuess: data.canGuess,
+        hasAlreadyWon: data.hasAlreadyWon,
+      };
+
+      if (data.timeUntilNextAttempt !== undefined) {
+        eligibilityUpdate.timeUntilNextAttempt = data.timeUntilNextAttempt;
+      }
+
+      setUserEligibility(eligibilityUpdate);
+    } catch (err) {
+      console.error('Failed to check user eligibility:', err);
+    }
+  }, []);
+
+  // Submit a guess
+  const submitGuess = useCallback(
+    async (guess: string) => {
+      setIsSubmittingGuess(true);
+      setLastGuessResult(undefined);
+
+      try {
+        const response = await fetch('/api/submit-guess', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ postId, guess }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data: GuessSubmissionResponse = await response.json();
+
+        const guessResult: {
+          isCorrect: boolean;
+          message?: string;
+        } = {
+          isCorrect: data.isCorrect,
+        };
+
+        if (data.message !== undefined) {
+          guessResult.message = data.message;
+        }
+
+        setLastGuessResult(guessResult);
+
+        // Refresh game state and user eligibility after guess
+        await Promise.all([refreshGameState(), checkUserEligibility()]);
+      } catch (err) {
+        console.error('Failed to submit guess:', err);
+        setError(err instanceof Error ? err.message : 'Failed to submit guess');
+      } finally {
+        setIsSubmittingGuess(false);
+      }
+    },
+    [postId, refreshGameState, checkUserEligibility]
+  );
+
   // Initialize on mount
   useEffect(() => {
     void initializeGame();
   }, [initializeGame]);
+
+  // Check user eligibility when game state changes
+  useEffect(() => {
+    if (gameState && !loading) {
+      void checkUserEligibility();
+    }
+  }, [gameState, loading, checkUserEligibility]);
 
   // Update timers every second
   useEffect(() => {
@@ -162,5 +280,10 @@ export const useGame = (): UseGameResult => {
     timeUntilNextGame,
     refreshGameState,
     resetGame,
+    // New guess functionality
+    submitGuess,
+    isSubmittingGuess,
+    userEligibility,
+    ...(lastGuessResult && { lastGuessResult }),
   };
 };

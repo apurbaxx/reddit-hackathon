@@ -1,9 +1,10 @@
-import { GameState, GAME_TIMING } from '../../shared/types/api';
+import { GameState, GAME_TIMING, UserAttempt } from '../../shared/types/api';
 import { getRandomCelebrity, generateBlurredImageUrls } from './celebrities';
 
 const BLUR_REVEAL_INTERVAL = GAME_TIMING.BLUR_REVEAL_INTERVAL;
 const TOTAL_GAME_DURATION = GAME_TIMING.TOTAL_GAME_DURATION;
 const GAME_RESTART_DELAY = GAME_TIMING.GAME_RESTART_DELAY;
+const GUESS_COOLDOWN = GAME_TIMING.GUESS_COOLDOWN;
 
 export class GameService {
   // Create a new game
@@ -37,6 +38,7 @@ export class GameService {
       isGameOver: false,
       imageUrl: imageUrl,
       blurredImages,
+      userAttempts: [], // Initialize empty user attempts array
     };
   }
 
@@ -127,5 +129,92 @@ export class GameService {
   // Get current image URL based on blur level
   static getCurrentImageUrl(gameState: GameState): string {
     return gameState.blurredImages[gameState.currentBlurLevel] || gameState.imageUrl;
+  }
+
+  // Check if user can make a guess
+  static canUserGuess(
+    gameState: GameState,
+    username: string
+  ): {
+    canGuess: boolean;
+    hasAlreadyWon: boolean;
+    nextAllowedAttemptTime?: number;
+    timeUntilNextAttempt?: number;
+  } {
+    // If game is over, no one can guess
+    if (gameState.isGameOver || gameState.gamePhase !== 'active') {
+      return { canGuess: false, hasAlreadyWon: false };
+    }
+
+    // Check if user has already won
+    const hasAlreadyWon = gameState.winners.includes(username);
+    if (hasAlreadyWon) {
+      return { canGuess: false, hasAlreadyWon: true };
+    }
+
+    // Find user's attempt record
+    const userAttempt = gameState.userAttempts.find((attempt) => attempt.username === username);
+
+    if (!userAttempt) {
+      // First time user, can guess
+      return { canGuess: true, hasAlreadyWon: false };
+    }
+
+    // If user has already guessed correctly, they can't guess again
+    if (userAttempt.hasGuessedCorrectly) {
+      return { canGuess: false, hasAlreadyWon: true };
+    }
+
+    // Check if cooldown period has passed
+    const currentTime = Date.now();
+    if (currentTime < userAttempt.nextAllowedAttemptTime) {
+      const timeUntilNextAttempt = userAttempt.nextAllowedAttemptTime - currentTime;
+      return {
+        canGuess: false,
+        hasAlreadyWon: false,
+        nextAllowedAttemptTime: userAttempt.nextAllowedAttemptTime,
+        timeUntilNextAttempt,
+      };
+    }
+
+    // User can guess
+    return { canGuess: true, hasAlreadyWon: false };
+  }
+
+  // Record a user attempt
+  static recordUserAttempt(gameState: GameState, username: string, isCorrect: boolean): GameState {
+    const currentTime = Date.now();
+    const existingAttemptIndex = gameState.userAttempts.findIndex(
+      (attempt) => attempt.username === username
+    );
+
+    const newAttempt: UserAttempt = {
+      username,
+      lastAttemptTime: currentTime,
+      hasGuessedCorrectly: isCorrect,
+      nextAllowedAttemptTime: isCorrect ? 0 : currentTime + GUESS_COOLDOWN,
+    };
+
+    let updatedUserAttempts: UserAttempt[];
+
+    if (existingAttemptIndex >= 0) {
+      // Update existing attempt
+      updatedUserAttempts = [...gameState.userAttempts];
+      updatedUserAttempts[existingAttemptIndex] = newAttempt;
+    } else {
+      // Add new attempt
+      updatedUserAttempts = [...gameState.userAttempts, newAttempt];
+    }
+
+    let updatedWinners = gameState.winners;
+    if (isCorrect && !gameState.winners.includes(username)) {
+      updatedWinners = [...gameState.winners, username];
+    }
+
+    return {
+      ...gameState,
+      userAttempts: updatedUserAttempts,
+      winners: updatedWinners,
+    };
   }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { GameState } from '../../shared/types/api';
 import { Timer } from './Timer';
+import { GuessInput } from './GuessInput';
 
 interface GameDisplayProps {
   gameState: GameState;
@@ -8,6 +9,17 @@ interface GameDisplayProps {
   timeUntilGameEnd: number;
   timeUntilNextGame: number;
   username: string;
+  onSubmitGuess: (guess: string) => Promise<void>;
+  isSubmittingGuess: boolean;
+  userEligibility: {
+    canGuess: boolean;
+    hasAlreadyWon: boolean;
+    timeUntilNextAttempt?: number;
+  };
+  lastGuessResult?: {
+    isCorrect: boolean;
+    message?: string;
+  };
 }
 
 export const GameDisplay: React.FC<GameDisplayProps> = ({
@@ -16,6 +28,10 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
   timeUntilGameEnd,
   timeUntilNextGame,
   username,
+  onSubmitGuess,
+  isSubmittingGuess,
+  userEligibility,
+  lastGuessResult,
 }) => {
   const getCurrentImageUrl = (): string => {
     // Use the image URL provided by the server, which should be properly resolved
@@ -217,7 +233,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
         )}
 
         {/* Instructions Card */}
-        <div className="bg-reddit-bg border border-reddit-border rounded p-4">
+        <div className="bg-reddit-bg border border-reddit-border rounded p-4 mb-6">
           <h3 className="font-semibold text-reddit-text mb-3 flex items-center gap-2">
             <span>📋</span> How to Play:
           </h3>
@@ -228,7 +244,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
-              <span>Submit your guess as a comment below</span>
+              <span>Submit your guess using the form below</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
@@ -236,7 +252,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
-              <span>Correct guesses get a fun reply from the bot</span>
+              <span>Incorrect guesses have a 30-minute cooldown</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
@@ -250,6 +266,19 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
             </div>
           )}
         </div>
+
+        {/* Guess Input Component */}
+        {gameState.gamePhase === 'active' && (
+          <GuessInput
+            onSubmitGuess={onSubmitGuess}
+            isSubmitting={isSubmittingGuess}
+            canGuess={userEligibility.canGuess}
+            hasAlreadyWon={userEligibility.hasAlreadyWon}
+            timeUntilNextAttempt={userEligibility.timeUntilNextAttempt || 0}
+            gamePhase={gameState.gamePhase}
+            {...(lastGuessResult && { lastGuessResult })}
+          />
+        )}
       </div>
     </div>
   );

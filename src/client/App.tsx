@@ -15,6 +15,11 @@ export const App = () => {
     timeUntilNextGame,
     refreshGameState,
     resetGame,
+    // New guess functionality
+    submitGuess,
+    isSubmittingGuess,
+    userEligibility,
+    lastGuessResult,
   } = useGame();
 
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -91,6 +96,10 @@ export const App = () => {
           timeUntilGameEnd={timeUntilGameEnd}
           timeUntilNextGame={timeUntilNextGame}
           username={username}
+          onSubmitGuess={submitGuess}
+          isSubmittingGuess={isSubmittingGuess}
+          userEligibility={userEligibility}
+          {...(lastGuessResult && { lastGuessResult })}
         />
       </div>
 
