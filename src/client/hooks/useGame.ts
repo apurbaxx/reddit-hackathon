@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   InitResponse,
   GameState,
@@ -281,6 +281,22 @@ export const useGame = (): UseGameResult => {
 
     return () => clearInterval(interval);
   }, [gameState, loading, refreshGameState]);
+
+  // Auto-refresh when clue timer reaches zero - simplified approach
+  useEffect(() => {
+    if (!gameState || loading || gameState.gamePhase !== 'active') return;
+
+    // More aggressive refresh when we're close to a reveal time
+    if (timeUntilNextReveal <= 5000) {
+      // Within 5 seconds of reveal
+      const interval = setInterval(() => {
+        console.log('Close to reveal time, checking for updates...');
+        void refreshGameState();
+      }, 2000); // Check every 2 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [timeUntilNextReveal, gameState, loading, refreshGameState]);
 
   return {
     gameState,
