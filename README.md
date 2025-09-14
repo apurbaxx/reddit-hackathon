@@ -1,18 +1,10 @@
-# 🏆 Guess the Celeb - Reddit Hackathon Entry
+# � Guess the Celeb - Reddit Hackathon
 
-> **Reddit Devvit Hackathon 2025 Submission**  
-> A fun interactive Reddit game where users try to guess celebrities from progressively less blurred images!
+**A fun celebrity guessing game built for Reddit!**
 
-## � Hackathon Overview
+Users try to identify celebrities from progressively less blurred images. Every 30 minutes, the image gets clearer until someone guesses correctly or the 2-hour game ends. Built with React and integrated directly into Reddit posts using the Devvit platform.
 
-This project was created for the **Reddit Devvit Hackathon 2025**, showcasing the power of Reddit's developer platform to create engaging, interactive experiences directly within Reddit posts.
-
-### 🚀 What Makes This Special
-
-- **Native Reddit Integration**: Seamlessly works within Reddit's ecosystem
-- **Real-time Interactivity**: Live timers, instant feedback, and dynamic content updates
-- **Community Engagement**: Brings users together through shared guessing games
-- **Modern Web Technologies**: Built with React, TypeScript, and Tailwind CSS
+## 🎮 How to Play🏆 Guess the Celeb - Reddit Hackathon
 
 ## �🎮 How to Play
 
@@ -30,7 +22,7 @@ This project was created for the **Reddit Devvit Hackathon 2025**, showcasing th
 - **Hour 1:30**: Third reveal - clearer (Level 4)
 - **Hour 2:00**: Final reveal - clear image + results
 
-## ✨ Hackathon Features
+## ✨Features
 
 - **Progressive Image Reveals**: Images get clearer every 30 minutes with auto-refresh
 - **Smart Fuzzy Matching**: "Cruise" matches "Tom Cruise", nicknames work too
@@ -56,32 +48,20 @@ This project was created for the **Reddit Devvit Hackathon 2025**, showcasing th
 - **Responsive Design**: Mobile-first approach
 - **State Synchronization**: Seamless updates across game phases
 
-## 🏗️ Technical Innovation
+## 🏗️ Technical Implementation
 
-### Architecture Highlights
+**Built with modern web technologies:**
 
-- **Frontend**: React + TypeScript + Tailwind CSS for modern, type-safe development
-- **Backend**: Reddit Devvit platform integration
-- **State Management**: Custom React hooks with intelligent auto-refresh logic
-- **Real-time Features**: Live countdown timers with automatic game phase transitions
+- React + TypeScript frontend
+- Reddit Devvit platform integration
+- Real-time countdown timers
+- Auto-refresh when game phases change
+- Smart celebrity name matching
+- Mobile-responsive design
 
-### Key Technical Achievements
+## 🎯 Why This Matters
 
-- **Smart Auto-Refresh**: Automatically updates game state when timers expire
-- **Fuzzy String Matching**: Advanced celebrity name recognition (handles nicknames, partial matches)
-- **Responsive Design**: Mobile-first approach optimized for Reddit's diverse user base
-- **Performance Optimization**: Efficient image loading and state synchronization
-
-## 🎯 What Makes This Special
-
-### Innovation in Reddit Gaming
-
-This project pushes the boundaries of what's possible within Reddit's ecosystem:
-
-- **Native Integration**: No external apps or websites needed
-- **Community Focused**: Brings users together through shared challenges
-- **Real-time Interactivity**: Live timers and instant feedback
-- **Seamless UX**: Feels like a natural part of Reddit
+This game showcases how Reddit can become a platform for interactive experiences beyond just comments and votes. It brings communities together through shared challenges while demonstrating the potential of Reddit's developer tools.
 
 ### Technical Problem Solving
 
@@ -89,15 +69,6 @@ This project pushes the boundaries of what's possible within Reddit's ecosystem:
 - **State Consistency**: Reliable game state across all user sessions
 - **User Experience**: Intuitive interface with clear visual feedback
 - **Cross-Platform**: Works seamlessly on desktop and mobile Reddit
-
-## 🏆 Hackathon Impact
-
-### Judge Experience
-
-- **Live Demo Ready**: Fully functional game available for immediate testing
-- **User Engagement**: Real community interaction and participation
-- **Technical Excellence**: Clean code architecture with modern best practices
-- **Innovation Showcase**: Demonstrates Reddit platform's untapped potential
 
 ## 🎯 Hackathon Innovation
 
@@ -109,43 +80,6 @@ This project demonstrates the potential of Reddit as a platform for interactive 
 - **Engages communities**: Brings users together through shared challenges
 - **Showcases modern web tech**: React, TypeScript, and real-time updates
 - **Prioritizes UX**: Smooth interactions and responsive design
-
-### Technical Challenges Solved
-
-- **Timer synchronization**: Auto-refresh when game phases change
-- **State management**: Consistent game state across user sessions
-- **Performance optimization**: Efficient celebrity matching and image loading
-- **User experience**: Intuitive interface with clear feedback
-
-## 🔧 Configuration
-
-### Adding New Celebrities
-
-Edit `src/server/core/celebrities.ts` to add more celebrities to the database.
-
-### Timing Configuration
-
-In `src/server/core/game.ts`, you can adjust the reveal intervals and game duration.
-
-## 🎨 Design Philosophy
-
-The app uses Tailwind CSS for a clean, Reddit-friendly design that feels native to the platform while providing a modern, engaging user experience.
-
-## 📱 Cross-Platform Experience
-
-Fully responsive design optimized for:
-
-- **Desktop Reddit**: Full-featured experience
-- **Mobile Reddit**: Touch-optimized interactions
-- **Reddit App**: Seamless integration
-
-## 🏆 Hackathon Goals Achieved
-
-✅ **Innovation**: Novel use of Reddit's platform for interactive gaming  
-✅ **Technical Excellence**: Clean code, modern architecture, real-time features  
-✅ **User Experience**: Intuitive design with smooth interactions  
-✅ **Community Engagement**: Brings Reddit users together through shared challenges  
-✅ **Platform Integration**: Native Reddit experience without external dependencies
 
 ---
 
