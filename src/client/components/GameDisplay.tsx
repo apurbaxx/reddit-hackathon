@@ -92,7 +92,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
               />
             </svg>
           </button>
-          <span className="text-reddit-text font-bold text-sm py-1">🎭</span>
+          <span className="text-reddit-text font-bold text-sm py-1"></span>
           <button className="text-reddit-text-secondary hover:text-reddit-blue p-1">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -106,7 +106,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
 
         <div className="flex-1">
           <h1 className="text-reddit-text font-medium text-lg mb-2">
-            🎭 Guess the Celebrity - {getRevealText()}
+            Guess the Celebrity - {getRevealText()}
           </h1>
         </div>
       </div>
