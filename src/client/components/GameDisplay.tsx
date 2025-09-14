@@ -2,6 +2,8 @@ import React from 'react';
 import { GameState } from '../../shared/types/api';
 import { Timer } from './Timer';
 import { GuessInput } from './GuessInput';
+import { DarkModeToggle } from './DarkModeToggle';
+import { useDarkMode } from '../hooks/useDarkMode';
 
 interface GameDisplayProps {
   gameState: GameState;
@@ -34,6 +36,8 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
   timeUntilNextAttempt,
   lastGuessResult,
 }) => {
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
+
   const getCurrentImageUrl = (): string => {
     // Use the image URL provided by the server, which should be properly resolved
     console.log('getCurrentImageUrl called with gameState.imageUrl:', gameState.imageUrl);
@@ -81,34 +85,12 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
     <div className="bg-white border border-reddit-border rounded-md shadow-sm">
       {/* Reddit-style post header */}
       <div className="flex items-start p-3 border-b border-reddit-border">
-        <div className="flex flex-col items-center mr-3">
-          {/* Upvote/Downvote arrows */}
-          <button className="text-reddit-text-secondary hover:text-reddit-orange p-1">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-          <span className="text-reddit-text font-bold text-sm py-1"></span>
-          <button className="text-reddit-text-secondary hover:text-reddit-blue p-1">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-        </div>
-
         <div className="flex-1">
           <h1 className="text-reddit-text font-medium text-lg mb-2">
             Guess the Celebrity - {getRevealText()}
           </h1>
         </div>
+        <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
       </div>
 
       {/* Post content */}
@@ -233,6 +215,21 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
           </div>
         )}
 
+        {/* Guess Input Component */}
+        {gameState.gamePhase === 'active' && (
+          <div className="mb-8">
+            <GuessInput
+              onSubmitGuess={onSubmitGuess}
+              isSubmitting={isSubmittingGuess}
+              canGuess={userEligibility.canGuess}
+              hasAlreadyWon={userEligibility.hasAlreadyWon}
+              timeUntilNextAttempt={timeUntilNextAttempt}
+              gamePhase={gameState.gamePhase}
+              {...(lastGuessResult && { lastGuessResult })}
+            />
+          </div>
+        )}
+
         {/* Instructions Card */}
         <div className="bg-reddit-bg border border-reddit-border rounded p-4 mb-6">
           <h3 className="font-semibold text-reddit-text mb-3 flex items-center gap-2">
@@ -245,7 +242,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
-              <span>Submit your guess using the form below</span>
+              <span>Submit your guess using the form above</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
@@ -267,19 +264,6 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
             </div>
           )}
         </div>
-
-        {/* Guess Input Component */}
-        {gameState.gamePhase === 'active' && (
-          <GuessInput
-            onSubmitGuess={onSubmitGuess}
-            isSubmitting={isSubmittingGuess}
-            canGuess={userEligibility.canGuess}
-            hasAlreadyWon={userEligibility.hasAlreadyWon}
-            timeUntilNextAttempt={timeUntilNextAttempt}
-            gamePhase={gameState.gamePhase}
-            {...(lastGuessResult && { lastGuessResult })}
-          />
-        )}
       </div>
     </div>
   );

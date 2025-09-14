@@ -1,8 +1,6 @@
 import { navigateTo } from '@devvit/web/client';
 import { useGame } from './hooks/useGame';
-import { useDarkMode } from './hooks/useDarkMode';
 import { GameDisplay } from './components/GameDisplay';
-import { DarkModeToggle } from './components/DarkModeToggle';
 
 export const App = () => {
   const {
@@ -22,8 +20,6 @@ export const App = () => {
     timeUntilNextAttempt,
     lastGuessResult,
   } = useGame();
-
-  const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   // Loading state
   if (loading) {
@@ -72,24 +68,6 @@ export const App = () => {
 
   return (
     <div className="min-h-screen bg-reddit-bg">
-      {/* Reddit-style header */}
-      <header className="bg-white border-b border-reddit-border sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-reddit-orange rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">🎭</span>
-              </div>
-              <div>
-                <h1 className="text-reddit-text font-bold text-lg">Guess the Celebrity</h1>
-                <p className="text-reddit-text-secondary text-xs">r/copyrighted_art_dev</p>
-              </div>
-            </div>
-            <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
-          </div>
-        </div>
-      </header>
-
       <div className="max-w-5xl mx-auto px-4 py-4">
         <GameDisplay
           gameState={gameState}
