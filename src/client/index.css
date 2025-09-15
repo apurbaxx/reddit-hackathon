@@ -13,6 +13,7 @@
   --reddit-green: #46d160;
   --reddit-green-dark: #2d8f47;
   --reddit-green-light: #f0fff4;
+  --reddit-gold: #ffd700;
   --reddit-bg: #dae0e6;
   --reddit-text: #1c1c1c;
   --reddit-text-secondary: #7c7c7c;
@@ -32,6 +33,7 @@
   --reddit-green: #46d160;
   --reddit-green-dark: #2d8f47;
   --reddit-green-light: #0f2d14;
+  --reddit-gold: #ffd700;
   --reddit-bg: #030303;
   --reddit-text: #d7dadc;
   --reddit-text-secondary: #818384;
@@ -59,6 +61,7 @@
 .text-reddit-red { color: var(--reddit-red); }
 .text-reddit-green { color: var(--reddit-green); }
 .text-reddit-green-dark { color: var(--reddit-green-dark); }
+.text-reddit-gold { color: var(--reddit-gold); }
 .text-reddit-text { color: var(--reddit-text); }
 .text-reddit-text-secondary { color: var(--reddit-text-secondary); }
 
@@ -111,4 +114,49 @@ body {
 /* Smooth transitions for theme changes */
 * {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom Reddit-style loading animations */
+@keyframes reddit-bounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.1);
+  }
+}
+
+@keyframes reddit-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes upvote-float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(5deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.reddit-bounce {
+  animation: reddit-bounce 1.5s ease-in-out infinite;
+}
+
+.reddit-pulse {
+  animation: reddit-pulse 2s ease-in-out infinite;
+}
+
+.upvote-float {
+  animation: upvote-float 3s ease-in-out infinite;
 }

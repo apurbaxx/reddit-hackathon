@@ -110,7 +110,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
               <div className="text-reddit-orange font-bold text-lg">
                 {gameState.currentBlurLevel + 1}/4
               </div>
-              <div className="text-reddit-text-secondary text-xs">Blur Level</div>
+              <div className="text-reddit-text-secondary text-xs">Level</div>
             </div>
           </div>
         </div>
