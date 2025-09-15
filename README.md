@@ -12,7 +12,7 @@ Users try to identify celebrities from progressively less blurred images. Every 
 2. **Submit your guess** - Use the built-in form to make your guess
 3. **Wait for reveals** - Every 30 minutes, the image becomes less blurred
 4. **Get rewarded** - Correct guesses are tracked and celebrated!
-5. **See final results** - After 2 hours, the clear image and all winners are revealed
+5. **See final results** - After 2 hours, the lightly blurred image and all winners are revealed
 
 ## 🕐 Game Timeline
 
@@ -20,7 +20,7 @@ Users try to identify celebrities from progressively less blurred images. Every 
 - **Hour 0:30**: First reveal - less blur (Level 2)
 - **Hour 1:00**: Second reveal - even clearer (Level 3)
 - **Hour 1:30**: Third reveal - clearer (Level 4)
-- **Hour 2:00**: Final reveal - clear image + results
+- **Hour 2:00**: Final reveal - lightly blurred image + results
 
 ## ✨Features
 

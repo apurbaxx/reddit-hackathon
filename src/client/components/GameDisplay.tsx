@@ -46,7 +46,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
 
   const getBlurAmount = (): number => {
     // Return blur amount based on current level
-    // Level 0 = 20px blur, Level 1 = 15px, Level 2 = 10px, Level 3 = 0px
+    // Level 0 = 20px blur, Level 1 = 15px, Level 2 = 10px, Level 3 = 3px (lightly blurred)
     switch (gameState.currentBlurLevel) {
       case 0:
         return 20;
@@ -55,7 +55,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
       case 2:
         return 10;
       case 3:
-        return 0;
+        return 7; // Changed from 0 to 7px for light blur in final reveal
       default:
         return 20;
     }
@@ -70,7 +70,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
       case 2:
         return 'Third Clue (Getting Clearer)';
       case 3:
-        return 'Final Reveal (Clear Image)';
+        return 'Final Reveal (Lightly Blurred)';
       default:
         return 'Mystery Image';
     }

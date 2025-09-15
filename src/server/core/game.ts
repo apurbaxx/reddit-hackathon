@@ -65,7 +65,7 @@ export class GameService {
 
     // Calculate what blur level we should be at based on elapsed time
     const intervals = Math.floor(elapsedTime / BLUR_REVEAL_INTERVAL);
-    const newBlurLevel = Math.min(intervals, 3); // Max level is 3 (clear image)
+    const newBlurLevel = Math.min(intervals, 3); // Max level is 3 (lightly blurred image)
 
     // Check if game should be over (2 hours passed)
     const isGameOver = elapsedTime >= TOTAL_GAME_DURATION;
