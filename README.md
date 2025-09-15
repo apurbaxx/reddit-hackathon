@@ -1,10 +1,8 @@
-#  Guess the Celeb - Reddit Hackathon
+# Guess the Celeb
 
 **A fun celebrity guessing game built for Reddit!**
 
 Users try to identify celebrities from progressively less blurred images. Every 30 minutes, the image gets clearer until someone guesses correctly or the 2-hour game ends. Built with React and integrated directly into Reddit posts using the Devvit platform.
-
-## 🎮 How to Play🏆 Guess the Celeb - Reddit Hackathon
 
 ## 🎮 How to Play
 
