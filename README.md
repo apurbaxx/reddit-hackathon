@@ -1,4 +1,4 @@
-# � Guess the Celeb - Reddit Hackathon
+#  Guess the Celeb - Reddit Hackathon
 
 **A fun celebrity guessing game built for Reddit!**
 
@@ -6,7 +6,7 @@ Users try to identify celebrities from progressively less blurred images. Every 
 
 ## 🎮 How to Play🏆 Guess the Celeb - Reddit Hackathon
 
-## �🎮 How to Play
+## 🎮 How to Play
 
 1. **Look at the blurred image** - Each game starts with a heavily blurred celebrity photo
 2. **Submit your guess** - Use the built-in form to make your guess
@@ -47,17 +47,6 @@ Users try to identify celebrities from progressively less blurred images. Every 
 - **Fuzzy String Matching**: Smart celebrity name recognition
 - **Responsive Design**: Mobile-first approach
 - **State Synchronization**: Seamless updates across game phases
-
-## 🏗️ Technical Implementation
-
-**Built with modern web technologies:**
-
-- React + TypeScript frontend
-- Reddit Devvit platform integration
-- Real-time countdown timers
-- Auto-refresh when game phases change
-- Smart celebrity name matching
-- Mobile-responsive design
 
 ## 🎯 Why This Matters
 
