@@ -27,7 +27,7 @@ export const App = () => {
       'Gathering the most mysterious celebrities from the Reddit multiverse...',
       'Consulting the hivemind for the perfect celebrity mystery...',
       'Deploying upvote-powered image blur technology...',
-      'Synchronizing with r/copyrighted_art_dev community guidelines...',
+      'Synchronizing with r/mystery_frame_dev community guidelines...',
       'Loading premium Reddit detective mode...',
     ];
 
@@ -53,7 +53,7 @@ export const App = () => {
                 <div className="w-5 h-5 bg-reddit-orange rounded-full flex items-center justify-center">
                   <span className="text-white text-xs font-bold">r/</span>
                 </div>
-                <span className="text-gray-400 text-sm">copyrighted_art_dev</span>
+                <span className="text-gray-400 text-sm">mystery_frame_dev</span>
               </div>
             </div>
           </div>

@@ -8,7 +8,7 @@ export const createPost = async () => {
 
   return await reddit.submitCustomPost({
     splash: {
-      appDisplayName: 'copyrighted-art',
+      appDisplayName: 'mystery-frame',
     },
     subredditName: subredditName,
     title: '🎭 Guess the Celeb Challenge! Can you identify this celebrity?',

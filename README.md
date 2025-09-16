@@ -1,4 +1,4 @@
-# Guess the Celeb
+# Mystery Frame
 
 **A fun celebrity guessing game built for Reddit!**
 

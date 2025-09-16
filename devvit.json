@@ -1,6 +1,6 @@
 {
   "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
-  "name": "copyrighted-art",
+  "name": "mystery-frame",
   "post": {
     "dir": "dist/client",
     "entrypoints": {
@@ -31,6 +31,6 @@
     "onAppInstall": "/internal/on-app-install"
   },
   "dev": {
-    "subreddit": "copyrighted_art_dev"
+    "subreddit": "mystery_frame_dev"
   }
 }

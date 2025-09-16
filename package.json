@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "copyrighted-art",
+  "name": "mystery-frame",
   "version": "1.0.0",
   "description": "A Reddit Devvit Web app where users guess celebrities from progressively less blurred images",
   "license": "BSD-3-Clause",
