@@ -19,7 +19,7 @@
   "menu": {
     "items": [
       {
-        "label": "🎭 Start New Celebrity Game",
+        "label": "Start New Celebrity Game",
         "description": "Create a new Guess the Celeb challenge post",
         "location": "subreddit",
         "forUserType": "moderator",

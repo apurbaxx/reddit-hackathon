@@ -11,6 +11,6 @@ export const createPost = async () => {
       appDisplayName: 'mystery-frame',
     },
     subredditName: subredditName,
-    title: '🎭 Guess the Celeb Challenge! Can you identify this celebrity?',
+    title: 'Guess the Celeb Challenge! Can you identify this celebrity?',
   });
 };
