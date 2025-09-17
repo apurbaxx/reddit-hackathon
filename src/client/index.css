@@ -160,3 +160,51 @@ body {
 .upvote-float {
   animation: upvote-float 3s ease-in-out infinite;
 }
+
+@keyframes snoo-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.snoo-pulse {
+  animation: snoo-pulse 2s ease-in-out infinite;
+}
+
+@keyframes reddit-glitch {
+  0% {
+    transform: translate(0, 0);
+    box-shadow: 0 0 0 2px var(--reddit-orange), 0 0 0 4px var(--reddit-blue);
+  }
+  25% {
+    transform: translate(2px, -2px);
+    box-shadow: 0 0 0 2px var(--reddit-blue), 0 0 0 4px var(--reddit-red);
+  }
+  50% {
+    transform: translate(-2px, 2px);
+    box-shadow: 0 0 0 2px var(--reddit-red), 0 0 0 4px var(--reddit-orange);
+  }
+  75% {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 2px var(--reddit-orange), 0 0 0 4px var(--reddit-blue);
+  }
+  100% {
+    transform: translate(0, 0);
+    box-shadow: 0 0 0 2px var(--reddit-blue), 0 0 0 4px var(--reddit-red);
+  }
+}
+
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.reddit-glitch {
+  animation: reddit-glitch 1s steps(1, end) infinite;
+}
