@@ -23,9 +23,9 @@ export const Timer: React.FC<TimerProps> = ({ milliseconds, label, className = '
   };
 
   return (
-    <div className={`text-center ${className}`}>
-      <div className="text-sm text-reddit-text-secondary mb-1">{label}</div>
-      <div className="text-lg font-mono font-bold text-reddit-orange">
+    <div className={`text-center p-2 rounded-md ${className}`}>
+      <div className="text-sm text-gray-400 mb-1 font-mono">{label}</div>
+      <div className="text-lg font-mono font-bold text-white">
         {milliseconds > 0 ? formatTime(milliseconds) : "⏰ Time's up!"}
       </div>
     </div>

@@ -208,3 +208,22 @@ body {
 .reddit-glitch {
   animation: reddit-glitch 1s steps(1, end) infinite;
 }
+
+.pixelated-button {
+  border-style: solid;
+  border-width: 4px;
+  border-image-slice: 2;
+  border-image-width: 2;
+  border-image-repeat: stretch;
+  border-image-source: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="6" height="6"><path d="M0 2h2v2H0zM2 0h2v2H2zM4 2h2v2H4zM2 4h2v2H2z" fill="%23000"/></svg>');
+  border-image-outset: 2;
+  position: relative;
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  background: #ff4500;
+  image-rendering: pixelated;
+}

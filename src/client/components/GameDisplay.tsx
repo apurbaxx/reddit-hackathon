@@ -39,14 +39,10 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
   const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   const getCurrentImageUrl = (): string => {
-    // Use the image URL provided by the server, which should be properly resolved
-    console.log('getCurrentImageUrl called with gameState.imageUrl:', gameState.imageUrl);
     return gameState.imageUrl;
   };
 
   const getBlurAmount = (): number => {
-    // Return blur amount based on current level
-    // Level 0 = 20px blur, Level 1 = 15px, Level 2 = 10px, Level 3 = 3px (lightly blurred)
     switch (gameState.currentBlurLevel) {
       case 0:
         return 20;
@@ -55,7 +51,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
       case 2:
         return 10;
       case 3:
-        return 7; // Changed from 0 to 7px for light blur in final reveal
+        return 7;
       default:
         return 20;
     }
@@ -82,12 +78,13 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
   };
 
   return (
-    <div className="bg-white border border-reddit-border rounded-md shadow-sm">
+    <div className="bg-white border border-reddit-border rounded-md shadow-sm font-mono">
       {/* Reddit-style post header */}
-      <div className="flex items-start p-3 border-b border-reddit-border">
+      <div className="flex items-center p-3 border-b border-reddit-border">
+        <img src="/snoo.png" alt="Snoo" className="w-8 h-8 mr-3 pixelated" />
         <div className="flex-1">
-          <h1 className="text-reddit-text font-medium text-lg mb-2">
-            Guess the Celebrity - {getRevealText()}
+          <h1 className="text-reddit-text font-medium text-lg">
+            Guess the Celeb Challenge!
           </h1>
         </div>
         <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
@@ -96,43 +93,25 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
       {/* Post content */}
       <div className="p-4">
         {/* Game Status Banner */}
-        <div className="bg-reddit-orange-light border-l-4 border-reddit-orange p-3 mb-4 rounded-r">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-reddit-text font-semibold">{getRevealText()}</h2>
-              <p className="text-reddit-text-secondary text-sm">
-                {gameState.gamePhase === 'active'
-                  ? 'Submit your guess in the comments below!'
-                  : 'Game Over! See the results below.'}
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-reddit-orange font-bold text-lg">
-                {gameState.currentBlurLevel + 1}/4
-              </div>
-              <div className="text-reddit-text-secondary text-xs">Level</div>
-            </div>
-          </div>
+        <div className="bg-reddit-orange-light border-2 border-reddit-orange p-3 mb-4 rounded-md text-center">
+          <h2 className="text-reddit-text font-bold text-xl uppercase">{getRevealText()}</h2>
+          <p className="text-reddit-text-secondary text-sm">
+            {gameState.gamePhase === 'active'
+              ? 'Can you identify this celebrity?'
+              : 'Game Over! Check out the results.'}
+          </p>
         </div>
 
         {/* Celebrity Image */}
         <div className="flex justify-center mb-6">
-          <div className="relative">
+          <div className="relative p-2 border-4 border-gray-800 rounded-md reddit-glitch">
             <img
               src={getCurrentImageUrl()}
               alt="Mystery Celebrity"
-              className="w-80 h-80 object-cover rounded-md border border-reddit-border"
+              className="w-80 h-80 object-cover pixelated"
               style={gameState.gamePhase === 'active' ? blurStyle : {}}
               onError={(e) => {
-                console.error('Image failed to load:', getCurrentImageUrl());
-                console.error('Original gameState.imageUrl:', gameState.imageUrl);
-
-                // If the image fails to load, fall back to snoo.png
-                console.log('Image failed to load, using snoo.png fallback');
                 e.currentTarget.src = 'snoo.png';
-              }}
-              onLoad={() => {
-                console.log('Image loaded successfully:', getCurrentImageUrl());
               }}
             />
             {gameState.gamePhase === 'revealed' && (
@@ -163,27 +142,27 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
 
         {/* Game Over / Results */}
         {gameState.gamePhase === 'revealed' && (
-          <div className="bg-reddit-green-light border border-reddit-green rounded p-4 mb-6">
-            <h2 className="text-xl font-bold text-reddit-green-dark text-center mb-4">
-              🎉 Game Complete!
+          <div className="bg-green-900 border-4 border-green-500 rounded-lg p-4 mb-6 text-white text-center">
+            <h2 className="text-2xl font-bold uppercase tracking-wider mb-4">
+              🎉 Game Over! 🎉
             </h2>
-            <div className="text-center mb-4">
-              <h3 className="text-lg font-semibold text-reddit-text">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">
                 The celebrity was:{' '}
-                <span className="text-reddit-green-dark font-bold">{gameState.celebrityName}</span>
+                <span className="text-green-300 font-bold">{gameState.celebrityName}</span>
               </h3>
             </div>
 
             {gameState.winners.length > 0 ? (
-              <div className="text-center">
-                <h4 className="text-reddit-text font-semibold mb-3">
+              <div>
+                <h4 className="font-semibold mb-3">
                   🏆 Winners ({gameState.winners.length}):
                 </h4>
                 <div className="flex flex-wrap justify-center gap-2">
                   {gameState.winners.map((winner, index) => (
                     <span
                       key={index}
-                      className="bg-reddit-orange text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-reddit-orange-dark cursor-pointer"
+                      className="bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-medium"
                     >
                       u/{winner}
                     </span>
@@ -191,23 +170,22 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="text-center text-reddit-text-secondary">
+              <div>
                 <p>🤔 No one guessed correctly this time!</p>
                 <p className="text-sm mt-1">Better luck next game!</p>
               </div>
             )}
 
-            {/* Next Game Countdown */}
             {timeUntilNextGame > 0 && (
-              <div className="mt-6 text-center">
-                <div className="bg-reddit-blue-light border border-reddit-blue rounded p-3">
-                  <h4 className="text-reddit-blue-dark font-semibold mb-2">
+              <div className="mt-6">
+                <div className="bg-blue-900 border-2 border-blue-500 rounded p-3">
+                  <h4 className="font-semibold mb-2">
                     🚀 Next Game Starting Soon!
                   </h4>
                   <Timer
                     milliseconds={timeUntilNextGame}
-                    label="New game starts in:"
-                    className="text-reddit-blue-dark"
+                    label="New game in:"
+                    className="text-blue-300"
                   />
                 </div>
               </div>
@@ -231,35 +209,35 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
         )}
 
         {/* Instructions Card */}
-        <div className="bg-reddit-bg border border-reddit-border rounded p-4 mb-6">
-          <h3 className="font-semibold text-reddit-text mb-3 flex items-center gap-2">
+        <div className="bg-gray-800 border-2 border-gray-700 rounded-lg p-4 mb-6">
+          <h3 className="font-bold text-white mb-3 flex items-center gap-2">
             <span>📋</span> How to Play:
           </h3>
-          <ul className="text-sm text-reddit-text-secondary space-y-2">
+          <ul className="text-sm text-gray-400 space-y-2">
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
-              <span>Look at the blurred image above</span>
+              <span>Look at the pixelated image above.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
-              <span>Submit your guess using the form above</span>
+              <span>Submit your guess in the comments.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
-              <span>Every 30 minutes, the image becomes less blurred</span>
+              <span>The image gets clearer every 30 mins.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
-              <span>Incorrect guesses have a 30-minute cooldown</span>
+              <span>30-min cooldown on wrong guesses.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-reddit-orange">•</span>
-              <span>Game ends after 2 hours with full reveal</span>
+              <span>Full reveal after 2 hours. Good luck!</span>
             </li>
           </ul>
           {username && (
-            <div className="mt-4 p-3 bg-white border border-reddit-border rounded text-sm">
-              <span className="text-reddit-text-secondary">Playing as:</span>{' '}
+            <div className="mt-4 p-3 bg-gray-900 border border-gray-700 rounded text-sm">
+              <span className="text-gray-400">Playing as:</span>{' '}
               <span className="font-medium text-reddit-orange">u/{username}</span>
             </div>
           )}
