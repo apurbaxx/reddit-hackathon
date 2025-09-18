@@ -81,11 +81,9 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
     <div className="bg-white border border-reddit-border rounded-md shadow-sm font-mono">
       {/* Reddit-style post header */}
       <div className="flex items-center p-3 border-b border-reddit-border">
-        <img src="/snoo.png" alt="Snoo" className="w-8 h-8 mr-3 pixelated" />
+        <img src="/celebGame.png" alt="Snoo" className="w-8 h-8 mr-3 pixelated" />
         <div className="flex-1">
-          <h1 className="text-reddit-text font-medium text-lg">
-            Guess the Celeb Challenge!
-          </h1>
+          <h1 className="text-reddit-text font-medium text-lg">Guess the Celeb Challenge!</h1>
         </div>
         <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
       </div>
@@ -143,9 +141,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
         {/* Game Over / Results */}
         {gameState.gamePhase === 'revealed' && (
           <div className="bg-green-900 border-4 border-green-500 rounded-lg p-4 mb-6 text-white text-center">
-            <h2 className="text-2xl font-bold uppercase tracking-wider mb-4">
-              🎉 Game Over! 🎉
-            </h2>
+            <h2 className="text-2xl font-bold uppercase tracking-wider mb-4">🎉 Game Over! 🎉</h2>
             <div className="mb-4">
               <h3 className="text-lg font-semibold">
                 The celebrity was:{' '}
@@ -155,9 +151,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
 
             {gameState.winners.length > 0 ? (
               <div>
-                <h4 className="font-semibold mb-3">
-                  🏆 Winners ({gameState.winners.length}):
-                </h4>
+                <h4 className="font-semibold mb-3">🏆 Winners ({gameState.winners.length}):</h4>
                 <div className="flex flex-wrap justify-center gap-2">
                   {gameState.winners.map((winner, index) => (
                     <span
@@ -179,9 +173,7 @@ export const GameDisplay: React.FC<GameDisplayProps> = ({
             {timeUntilNextGame > 0 && (
               <div className="mt-6">
                 <div className="bg-blue-900 border-2 border-blue-500 rounded p-3">
-                  <h4 className="font-semibold mb-2">
-                    🚀 Next Game Starting Soon!
-                  </h4>
+                  <h4 className="font-semibold mb-2">🚀 Next Game Starting Soon!</h4>
                   <Timer
                     milliseconds={timeUntilNextGame}
                     label="New game in:"

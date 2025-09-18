@@ -1,4 +1,3 @@
-import { navigateTo } from '@devvit/web/client';
 import { useGame } from './hooks/useGame';
 import { GameDisplay } from './components/GameDisplay';
 
@@ -37,11 +36,7 @@ export const App = () => {
       <div className="min-h-screen bg-gray-900 flex flex-col justify-center items-center p-6">
         <div className="bg-gray-800 border-2 border-gray-700 rounded-lg p-8 max-w-md text-center shadow-lg reddit-glitch">
           <div className="mb-6 flex justify-center">
-            <img
-              src="/celebGame.png"
-              alt="Loading..."
-              className="w-32 h-32 pixelated snoo-pulse"
-            />
+            <img src="/celebGame.png" alt="Loading..." className="w-32 h-32 pixelated snoo-pulse" />
           </div>
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-white uppercase tracking-wider">Loading Game</h2>
@@ -102,27 +97,9 @@ export const App = () => {
         />
       </div>
 
-      {/* Reddit-style footer */}
+      {/* Footer */}
       <footer className="border-t border-reddit-border bg-white py-4 mt-8">
-        <div className="max-w-5xl mx-auto px-4 flex justify-center gap-6 text-xs text-reddit-text-secondary">
-          <button
-            className="hover:text-reddit-orange transition-colors"
-            onClick={() => navigateTo('https://developers.reddit.com/docs')}
-          >
-            Devvit Docs
-          </button>
-          <span>•</span>
-          <button
-            className="hover:text-reddit-orange transition-colors"
-            onClick={() => navigateTo('https://www.reddit.com/r/Devvit')}
-          >
-            r/Devvit
-          </button>
-          <span>•</span>
-          <button className="hover:text-reddit-orange transition-colors" onClick={refreshGameState}>
-            Refresh Game
-          </button>
-          <span>•</span>
+        <div className="max-w-5xl mx-auto px-4 flex justify-center text-xs text-reddit-text-secondary">
           <button className="hover:text-reddit-red transition-colors" onClick={resetGame}>
             🔄 Reset Game (Dev)
           </button>

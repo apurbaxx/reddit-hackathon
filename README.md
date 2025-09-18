@@ -74,7 +74,6 @@ This project demonstrates the potential of Reddit as a platform for interactive 
 
 - **Leaderboard System**: Track top performers across games
 - **Difficulty Modes**: Easy, Medium, Hard celebrity categories
-- **Daily Challenges**: Special themed celebrity rounds
 - **Hint System**: Optional clues for harder celebrities
 - **Social Features**: Share results, challenge friends
 
